@@ -257,6 +257,9 @@ const App = () => {
       };
 
    //Next replace const [houses, setHouses] = React.useState([]);
+   //The new function receives a reducer function called "housesReducer"
+   //and empty array [] and returns an array with two items:
+   //houses (current state) and updateHouses (state updater funcion)
    const[houses, dispatchHouses] = React.useReducer(housesReducer, []);
  
    //Introduce another state called "isLoading" 
@@ -273,10 +276,13 @@ const App = () => {
       //remember the first parameter to useEffect are a function(s)
       setIsLoading(true);
       getAsyncHouses()
-       .then(result => {
-         setHouses(result.data.houses);
-         setIsLoading(false);
-       }) 
+       .then(result => { 
+         dispatchHouses({ //replace this setHouses(result.data.houses);
+            type: 'SET_STORIES',
+            payload: result.data.stories,
+          });
+          setIsLoading(false);
+         }) 
        .catch(() => setIsError(true));
     }, []); //remember second parameter is a dependency array
    
@@ -301,8 +307,11 @@ const App = () => {
       //called 'stories'. Since the state has changed
       //(e.g an item was deleted), the App, List, Item
       //components will re-render
-      setHouses(newHouses);
-    }
+      dispatchStories({   //replace this  setHouses(newHouses);
+        type: 'SET_STORIES',
+        payload: newStories,
+      });
+    };
   
     const handleAddHouse = (item) => { 
       const newHouses = houses.filter(   
