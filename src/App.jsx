@@ -275,11 +275,12 @@ const App = () => {
   React.useEffect(() => {
       //remember the first parameter to useEffect are a function(s)
       setIsLoading(true);
+
       getAsyncHouses()
        .then(result => { 
          dispatchHouses({ //replace this setHouses(result.data.houses);
             type: 'SET_STORIES',
-            payload: result.data.stories,
+            payload: result.data.houses,
           });
           setIsLoading(false);
          }) 
@@ -303,10 +304,6 @@ const App = () => {
         const newHouses = houses.filter(   
          (house) => item.objectID !== house.objectID
       );
-      //updater function updates the stateful variable 
-      //called 'stories'. Since the state has changed
-      //(e.g an item was deleted), the App, List, Item
-      //components will re-render
       dispatchStories({   //replace this  setHouses(newHouses);
         type: 'SET_STORIES',
         payload: newStories,
