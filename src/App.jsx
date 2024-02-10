@@ -345,15 +345,15 @@ const App = () => {
      It is another state transition becuase it deletes a record.
     */
     const handleRemoveHouse = (item) => { 
-        const newHouses = houses.filter(   
-         (house) => item.objectID !== house.objectID
-      );
+       // const newHouses = houses.filter(   <== handle this to reducer function 
+       //  (house) => item.objectID !== house.objectID
+       // );
       dispatchHouses({   //The second state transition handled
                           //by the reducer. This replaced setHouses(newHouses);
                           //Now modify the HouseReducer() function to cover this
                           //new case.
         type: 'DELETE_HOUSE',
-        payload: newHouses,
+        payload: item,
       });
     };
   
@@ -364,9 +364,9 @@ const App = () => {
    */
 
     const handleAddHouse = (item) => { 
-      const newHouses = houses.filter(   
-       (house) => item.objectID !== house.objectID
-    );
+      //const newHouses = houses.filter(   <== move this block of code in the reducer function
+      // (house) => item.objectID !== house.objectID
+      //);
     //updater function updates the stateful variable 
     //called 'houses'. Since the state has changed
     //(e.g an item was added), the App, List, Item
@@ -375,7 +375,7 @@ const App = () => {
     //function dispatchHouse().
     dispatchHouses({
       type: 'ADD_HOUSE',
-      payload: newHouses,
+      payload: item,
     });
   }
   //Finally after updating getAsyncHouses(), handleRemoveHouse()
