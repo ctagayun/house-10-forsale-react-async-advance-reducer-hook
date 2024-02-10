@@ -241,26 +241,55 @@ const App = () => {
     '',  //Initial state
     );
 
-  /* Step 1: First introduce a reducer function called housesReducer.
-    we will move the "houses" state to reducerHook
+  /* Step 1: In using react Reducer:
+      First introduce a reducer function called housesReducer.
+  we will move the "houses" state to reducerHook (called houses reducer
+  see below)
       const [houses, setHouses] = React.useState([]);
   */
   
-   const housesReducer = (state, action) => { 
-     if (action.type === 'SET_STORIES') { //action is always associated 
-                                          //with a type
-          return action.payload; //if type matches a condition, return a 
-                                 //a state the new state is simply "payload"
-        } else {
-          throw new Error(); //if type is not covered throw an error
-        }
+   const housesReducer = (state, action) => { //always receives a state 
+                                              //and action
+      switch (action.type){
+        case 'GET_HOUSES':
+          return action.payload;
+        case 'DELETE_HOUSE':
+          return state.filter(
+            (house) => action.payload.objecID !== house.objectID
+          );
+        case 'ADD_HOUSE':
+          return state.filter(
+            (house) => action.payload.objecID !== house.objectID
+          )
+        default:
+           throw new Error();
+      }
+                                              
+       //action is always associated 
+                                          //with a type and "payload".
+                                          //At the moment this reducer 
+                                          //has only one type
+           
+       
       };
 
-   //Next replace const [houses, setHouses] = React.useState([]);
-   //The new function receives a reducer function called "housesReducer"
-   //and empty array [] and returns an array with two items:
-   //houses (current state) and updateHouses (state updater funcion)
+   // Step 2: In using REACT REDUCER:
+   //First lets use a Reducer instead of const [houses, setHouses] = React.useState([]);
+   //useState to manage state. The [] is the initial state
+
    const[houses, dispatchHouses] = React.useReducer(housesReducer, []);
+
+
+   //The new function receives a reducer function called "housesReducer"
+   //(see line 251)
+   //and empty array [] and returns an array with two items:
+   //          houses (current state) and
+   //          dispatchHouses (state updater function)
+   //The updater function updates the state "houses" IMPLICITLY (A)
+   //dispatching an "action" for the reducer, The "action" comes with:
+   //
+   //     1. Type
+   //     2. and optional Payload
  
    //Introduce another state called "isLoading" 
     const [isLoading, setIsLoading] = React.useState(false);
@@ -268,18 +297,26 @@ const App = () => {
     //Introduce another state called "isError"
     const [isError, setIsError] = React.useState(false);
 
-  /*Step 2: RESOLVE THE PROMISE AS A SIDE-EFECT
+  /*Step 3: Handle all functions that modify state. 
+     The first state transition function is 
+          getAsyncHouses(). 
+   
+    It is a STATE transition becuase it fetches the data for the 'house" object.
+    Modify useEffect to use "dispatchHouses" reducer function (B)
     We want to start off with an empty list of stories and simulate 
     fetching these stories asynchronously. In a new useEFFECT hook, call the 
     function and resolve the returned promise as a side-effect.*/
-  React.useEffect(() => {
-      //remember the first parameter to useEffect are a function(s)
+    React.useEffect(() => {  //(B)
+      //remember the first parameter to useEffect are function(s)
       setIsLoading(true);
 
-      getAsyncHouses()
+      getAsyncHouses()   //state transition handled by reducer.
        .then(result => { 
-         dispatchHouses({ //replace this setHouses(result.data.houses);
-            type: 'SET_STORIES',
+         dispatchHouses({ // (A) reducer dispatches an "action. replace setHouses(result.data.houses);
+            type: 'GET_HOUSES', //type and payload are the components 
+                                 //of the "action" dispatched by the reducer
+                                 //Now modify the HouseReducer() function to cover this 
+                                 //new case "SET_STORIES"
             payload: result.data.houses,
           });
           setIsLoading(false);
@@ -287,10 +324,12 @@ const App = () => {
        .catch(() => setIsError(true));
     }, []); //remember second parameter is a dependency array
    
-  /* Next we write event handler which removes an item from HouseList
-      Select the record from the state called 'houses' based on the filter
-      Here, the JavaScript array's built-in filter method creates
-      a new filtered array called 'house'.
+  /*  
+
+    Next we write event handler which removes an item from HouseList
+    Select the record from the state called 'houses' based on the filter
+    Here, the JavaScript array's built-in filter method creates
+    a new filtered array called 'house'.
 
       The filter() method takes a function as an argument, 
     which accesses each item in the array and returns /
@@ -298,37 +337,59 @@ const App = () => {
     met, the item stays in the newly created array; if the function 
     returns false, it's removed from the filtered array.
 
-      Pass this handler to List component when instantiating the component
+    Pass this handler to List component when instantiating the component
+
+ STEP 4:The second state transition we want to handle using using 
+    dispatchHouses() reducer function is:
+         handleRemoveHouse().  
+     It is another state transition becuase it deletes a record.
     */
     const handleRemoveHouse = (item) => { 
         const newHouses = houses.filter(   
          (house) => item.objectID !== house.objectID
       );
-      dispatchStories({   //replace this  setHouses(newHouses);
-        type: 'SET_STORIES',
-        payload: newStories,
+      dispatchHouses({   //The second state transition handled
+                          //by the reducer. This replaced setHouses(newHouses);
+                          //Now modify the HouseReducer() function to cover this
+                          //new case.
+        type: 'DELETE_HOUSE',
+        payload: newHouses,
       });
     };
   
+  /*STEP 5:The third state transition we want to handle using  
+     dispatchHouses() reducer function is: 
+          handleAddHouse()  
+    It is another state transition because it deletes a record.
+   */
+
     const handleAddHouse = (item) => { 
       const newHouses = houses.filter(   
        (house) => item.objectID !== house.objectID
     );
     //updater function updates the stateful variable 
-    //called 'stories'. Since the state has changed
-    //(e.g an item was deleted), the App, List, Item
+    //called 'houses'. Since the state has changed
+    //(e.g an item was added), the App, List, Item
     //components will re-render
-    setHouses(newHouses);
+    //setHouses(newHouses); Replace this with reducer updater 
+    //function dispatchHouse().
+    dispatchHouses({
+      type: 'ADD_HOUSE',
+      payload: newHouses,
+    });
   }
-
-    const handleSearch = (event) => {
+  //Finally after updating getAsyncHouses(), handleRemoveHouse()
+  //and handleAddHouse(), modify houseReducer() function in line 251
+  //to handle all the three cases. GET_HOUSES, DELETE_HOUSE, ADD_HOUSE
+   
+  const handleSearch = (event) => {
       setSearchTerm(event.target.value); 
-    };
+   };
 
     //"houses" is the array of houses newly created by the filter() method.
-    const searchedHouses = houses.filter((house) =>
+  const searchedHouses = houses.filter((house) =>
       house.country.toLowerCase().includes(stateOfSearchComponent.toLowerCase())
-     );
+    );
 
   return (
     <>
