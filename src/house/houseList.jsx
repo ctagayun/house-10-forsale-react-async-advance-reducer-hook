@@ -28,15 +28,14 @@
 import * as React from 'react';
 import HouseRow  from './houserow';
 //import { HouseRowMemoized } from './houserow';
-const HouseList = ({list, onRemoveHouse, onAddHouse, setHouses}) =>
+const HouseList = ({list, onRemoveHouse, onAddHouse, getAllHouses}) =>
     {
       const mySearchHouses = JSON.stringify(list);
       console.log("SearchedHouses = " + mySearchHouses );
-      const [counter, setCounter] = React.useState(0);
-
+      
       const addHouse = () => {
-        setHouses([
-          ...list, //searchHouses
+        getAllHouses([
+          ...list, //contains the searchedHouses state
             {
               objectID: 9,
               address: "1456 Riverside Road",

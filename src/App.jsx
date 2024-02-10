@@ -2,7 +2,37 @@
 
 Task: Using Reducer Hook
   
+Interview Questions ReducerHook:
+  Question: What is useReducer in React?
+    Answer: useReducer is a React hook that manages complex 
+    state logic in function components by dispatching actions 
+    to update state.
+      
+  Question: How does useReducer differ from useState in React?
+    Answer: While useState is simpler for managing individual 
+    state variables, useReducer is more suitable for complex state 
+    logic where multiple values depend on each other.
 
+  Question: What is the basic structure of the useReducer hook?
+    Answer: It returns the current state and a dispatch function 
+    for triggering state updates, taking a reducer function and 
+    an initial state as arguments.
+
+  Question: What is a reducer function in useReducer?
+    Answer: The reducer function is responsible for specifying how 
+    the state should change in response to dispatched actions, 
+    based on the current state and the action. Reducer function 
+    is an argument to ReducerDispatch()
+
+  Question: How is state updated using useReducer?
+    Answer: State is updated by dispatching actions, and the reducer 
+    function determines the new state based on the current state 
+    and the action type.
+
+  Question: Can useReducer replace all use cases of useState in React?
+    Answer: While useReducer is powerful, it's not necessary for 
+    all scenarios. useState is simpler and more suitable for managing 
+    individual state variables. 
 
 ====================================================
 Prev  Task: - show a loading indicator
@@ -241,25 +271,29 @@ const App = () => {
     '',  //Initial state
     );
 
-  /* Step 1: In using react Reducer:
-      First introduce a reducer function called housesReducer.
-  we will move the "houses" state to reducerHook (called houses reducer
-  see below)
-      const [houses, setHouses] = React.useState([]);
+  /* Step 1: Steps in using React.useReducer:
+      First create a reducer function called housesReducer.
+   We will replace React.useState with React.useReducer.
+      The reducer function is responsible for specifying how 
+   the state should change in response to dispatched actions, 
+   based on the current state and the action.
   */
   
    const housesReducer = (state, action) => { //always receives a state 
                                               //and action
-      switch (action.type){
+      switch (action.type){ //this is what it means by reducer function
+                            //specifies how should state change based
+                            //on the "action" passed by the reducerDispatch()
         case 'GET_HOUSES':
-          return action.payload;
+          return action.payload; //specifies how should state change  
+
         case 'DELETE_HOUSE':
           return state.filter(
-            (house) => action.payload.objecID !== house.objectID
+            (house) => action.payload.objectID !== house.objectID //specifies how should state change 
           );
         case 'ADD_HOUSE':
           return state.filter(
-            (house) => action.payload.objecID !== house.objectID
+           // (house) => action.payload.objectID !== house.objectID
           )
         default:
            throw new Error();
@@ -312,12 +346,14 @@ const App = () => {
 
       getAsyncHouses()   //state transition handled by reducer.
        .then(result => { 
-         dispatchHouses({ // (A) reducer dispatches an "action. replace setHouses(result.data.houses);
-            type: 'GET_HOUSES', //type and payload are the components 
-                                 //of the "action" dispatched by the reducer
-                                 //Now modify the HouseReducer() function to cover this 
-                                 //new case "SET_STORIES"
-            payload: result.data.houses,
+         dispatchHouses({ // (A)  
+            type: 'GET_HOUSES',  //THE TYPE
+                                 //Instead of setting the state EXPLICITLY LIKE THE WAY useState 
+                                 //updater function does. React.useReducer state updater function 
+                                 //called dispatcher, sets the state IMPLICITLY by dispatching 
+                                 //an action for the dispatchHouses REDUCER. The action comes with 
+                                 //a TYPE and an optional PAYLOAD:
+            payload: result.data.houses, //THE PAYLOAD
           });
           setIsLoading(false);
          }) 
@@ -343,6 +379,11 @@ const App = () => {
     dispatchHouses() reducer function is:
          handleRemoveHouse().  
      It is another state transition becuase it deletes a record.
+
+     This handler computes the new stories. It is the second state transition.
+  It is valid to move this logic into the reducer function. Now the 
+  reducer function has to cover this state in a conditional transition.
+  See (B) in storiesReducer
     */
     const handleRemoveHouse = (item) => { 
        // const newHouses = houses.filter(   <== handle this to reducer function 
@@ -401,7 +442,7 @@ const App = () => {
        isFocused //pass imperatively a dedicated  prop. isFocused as an attribute is equivalent to isFocused={true}
        onInputChange={handleSearch}
       >
-       <strong>Search with 1 sec delay:</strong>
+       <strong>Search with 2 sec delay:</strong>
       </Search>
       <br></br>
 
@@ -413,7 +454,7 @@ const App = () => {
        <HouseList list={searchedHouses} 
                    onRemoveHouse={handleRemoveHouse} 
                    onAddHouse={handleAddHouse} 
-                   setHouses = {setHouses}/>  
+                   getAllHouses = {dispatchHouses}/>  
       }
     
     </>
