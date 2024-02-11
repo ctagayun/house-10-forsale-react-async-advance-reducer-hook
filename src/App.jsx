@@ -292,19 +292,13 @@ const App = () => {
             (house) => action.payload.objectID !== house.objectID //specifies how should state change 
           );
         case 'ADD_HOUSE':
-         // return state.filter(
-         //   (house) => action.payload.objectID !== house.objectID
-         // );
-          return action.payload; //specifies how should state change  
+          return action.payload;   
+
         default:
            throw new Error();
       }
-                                              
        //action is always associated 
-                                          //with a type and "payload".
-                                          //At the moment this reducer 
-                                          //has only one type
-           
+       //with a type and "payload".
        
       };
 
