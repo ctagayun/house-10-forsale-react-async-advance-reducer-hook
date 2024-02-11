@@ -400,21 +400,11 @@ const App = () => {
    */
 
   const handleAddHouse = (item) => { 
-    //Original code used by useState
-    //const newHouses = houses.filter(   <== move this block of code to HouseReducer()
-    // (house) => item.objectID !== house.objectID
-    //);
 
-    //updater function updates the stateful variable 
-    //called 'houses'. Since the state has changed
-    //(e.g an item was added), the App, List, Item
-    //components will re-render
-    //setHouses(newHouses); Replace this with reducer updater 
-    //function dispatchHouse().
     dispatchHouses({
       type: 'ADD_HOUSE',  //TYPE
       payload: [...houses,      //contains the searchedHouses state
-      {          //the below record will be appended to the end of ...list
+      {                         //the below records will be appended to the end of ...houses
         objectID: 9,
         address: "1456 Riverside Road",
         country: "USA",
