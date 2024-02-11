@@ -28,23 +28,10 @@
 import * as React from 'react';
 import HouseRow  from './houserow';
 //import { HouseRowMemoized } from './houserow';
-const HouseList = ({list, onRemoveHouse, onAddHouse, getAllHouses}) =>
+const HouseList = ({list, onRemoveHouse, onAddHouse, houseDispatcher}) =>
     {
       const mySearchHouses = JSON.stringify(list);
       console.log("SearchedHouses = " + mySearchHouses );
-      
-      const addHouse = () => {
-        getAllHouses([
-          ...list, //contains the searchedHouses state
-            {
-              objectID: 9,
-              address: "1456 Riverside Road",
-              country: "USA",
-              price: 25000000
-            },
-        ]);
-      };
-
       return (
           <>
             <div className="row mb-2">
@@ -80,7 +67,7 @@ const HouseList = ({list, onRemoveHouse, onAddHouse, getAllHouses}) =>
                 ))}
               </tbody>
             </table>
-            <button className="btn btn-primary" onClick={addHouse}>
+            <button className="btn btn-primary" onClick={onAddHouse}>
               Add
             </button>
           </>

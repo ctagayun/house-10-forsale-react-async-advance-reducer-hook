@@ -292,9 +292,10 @@ const App = () => {
             (house) => action.payload.objectID !== house.objectID //specifies how should state change 
           );
         case 'ADD_HOUSE':
-          return state.filter(
-           // (house) => action.payload.objectID !== house.objectID
-          )
+         // return state.filter(
+         //   (house) => action.payload.objectID !== house.objectID
+         // );
+          return action.payload; //specifies how should state change  
         default:
            throw new Error();
       }
@@ -348,11 +349,11 @@ const App = () => {
        .then(result => { 
          dispatchHouses({ // (A)  
             type: 'GET_HOUSES',  //THE TYPE
-                                 //Instead of setting the state EXPLICITLY LIKE THE WAY useState 
-                                 //updater function does. React.useReducer state updater function 
-                                 //called dispatcher, sets the state IMPLICITLY by dispatching 
-                                 //an action for the dispatchHouses REDUCER. The action comes with 
-                                 //a TYPE and an optional PAYLOAD:
+                                            //Instead of setting the state EXPLICITLY LIKE THE WAY useState 
+                                             //updater function does. React.useReducer state updater function 
+                                            //called dispatcher, sets the state IMPLICITLY by dispatching 
+                                            //an action for the dispatchHouses REDUCER. The action comes with 
+                                            //a TYPE and an optional PAYLOAD:
             payload: result.data.houses, //THE PAYLOAD
           });
           setIsLoading(false);
@@ -385,14 +386,14 @@ const App = () => {
   reducer function has to cover this state in a conditional transition.
   See (B) in storiesReducer
     */
-    const handleRemoveHouse = (item) => { 
-       // const newHouses = houses.filter(   <== handle this to reducer function 
+  const handleRemoveHouse = (item) => { 
+       // const newHouses = houses.filter(   <== MOVE THIS LOGIC TO  HouseReducer()
        //  (house) => item.objectID !== house.objectID
        // );
-      dispatchHouses({   //The second state transition handled
-                          //by the reducer. This replaced setHouses(newHouses);
-                          //Now modify the HouseReducer() function to cover this
-                          //new case.
+      dispatchHouses({    //The second state transition that we need to handle is
+                          //the DELETE record. This replaced setHouses(newHouses);
+                          //Now add the TYPE and PAYLOAD and the business logic 
+                          //to the HouseReducer() function to cover this new case.
         type: 'DELETE_HOUSE',
         payload: item,
       });
@@ -404,10 +405,12 @@ const App = () => {
     It is another state transition because it deletes a record.
    */
 
-    const handleAddHouse = (item) => { 
-      //const newHouses = houses.filter(   <== move this block of code in the reducer function
-      // (house) => item.objectID !== house.objectID
-      //);
+  const handleAddHouse = (item) => { 
+    //Original code used by useState
+    //const newHouses = houses.filter(   <== move this block of code to HouseReducer()
+    // (house) => item.objectID !== house.objectID
+    //);
+
     //updater function updates the stateful variable 
     //called 'houses'. Since the state has changed
     //(e.g an item was added), the App, List, Item
@@ -415,9 +418,23 @@ const App = () => {
     //setHouses(newHouses); Replace this with reducer updater 
     //function dispatchHouse().
     dispatchHouses({
-      type: 'ADD_HOUSE',
-      payload: item,
-    });
+      type: 'ADD_HOUSE',  //TYPE
+      payload: [...houses,      //contains the searchedHouses state
+      {          //the below record will be appended to the end of ...list
+        objectID: 9,
+        address: "1456 Riverside Road",
+        country: "USA",
+        price: 25000000
+      },
+      {      //the below record will be appended to the end of ...list
+        objectID: 10,
+        address: "1456 Riverside Road",
+        country: "USA",
+        price: 25000000
+      },
+       ] }        
+    );
+
   }
   //Finally after updating getAsyncHouses(), handleRemoveHouse()
   //and handleAddHouse(), modify houseReducer() function in line 251
@@ -454,7 +471,7 @@ const App = () => {
        <HouseList list={searchedHouses} 
                    onRemoveHouse={handleRemoveHouse} 
                    onAddHouse={handleAddHouse} 
-                   getAllHouses = {dispatchHouses}/>  
+                   houseDispatcher = {dispatchHouses}/>  
       }
     
     </>
